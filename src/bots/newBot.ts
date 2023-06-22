@@ -23,12 +23,20 @@ class Bot {
             }
 
             // Check for repeating moves strategy
-            if (totalGamesPlayed>50) {
+            if (totalGamesPlayed>50 && totalGamesPlayed<1000) {
                 const mostRecentMove = this.mostRecentRound(gamestate).p2
-                if (this.detectRepeatingMoves(gamestate, 2)) {
+                if (this.detectRepeatingMoves(gamestate, 1)) {
                     currentMove = this.defend(gamestate, mostRecentMove)
                 } 
-                if (this.detectRepeatingMoves(gamestate, 4)) {
+                if (this.detectRepeatingMoves(gamestate, 3)) {
+                    currentMove = this.counterAttack(gamestate, mostRecentMove)
+                }
+            } else if (totalGamesPlayed>=1000) {
+                const mostRecentMove = this.mostRecentRound(gamestate).p2
+                if (this.detectRepeatingMoves(gamestate, 3)) {
+                    currentMove = this.defend(gamestate, mostRecentMove)
+                } 
+                if (this.detectRepeatingMoves(gamestate, 5)) {
                     currentMove = this.counterAttack(gamestate, mostRecentMove)
                 }
             }
@@ -63,7 +71,7 @@ class Bot {
         return myDynamites
     }
 
-    private detectPreviousMoves(gamestate: Gamestate, moves) {
+    private detectPreviousMoves(gamestate: Gamestate, moves): Array<BotSelection> {
         let previousXMoves = []
         const totalMoves = gamestate.rounds.length
         for (let i = totalMoves-moves; i<totalMoves; i++) {
@@ -72,7 +80,7 @@ class Bot {
         return previousXMoves
     }
 
-    private detectRepeatingMoves(gamestate: Gamestate, moves) {
+    private detectRepeatingMoves(gamestate: Gamestate, moves): boolean {
         let previousXMoves = this.detectPreviousMoves(gamestate, moves)
         const allEqual = arr => arr.every(x => x===arr[0])
         return allEqual(previousXMoves)
