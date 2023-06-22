@@ -21,16 +21,19 @@ class Bot {
             if (this.dynamitesUsed(gamestate)==100) {
                 currentMove = this.randomiseMove(gamestate, 3)
             }
-        }
 
-
-        if (totalGamesPlayed>50) {
-            if (this.detectRepeatingMoves(gamestate, 4)) {
+            // Check for repeating moves strategy
+            if (totalGamesPlayed>50) {
                 const mostRecentMove = this.mostRecentRound(gamestate).p2
-                currentMove = this.counterAttack(gamestate, mostRecentMove)
+                if (this.detectRepeatingMoves(gamestate, 2)) {
+                    currentMove = this.defend(gamestate, mostRecentMove)
+                } 
+                if (this.detectRepeatingMoves(gamestate, 4)) {
+                    currentMove = this.counterAttack(gamestate, mostRecentMove)
+                }
             }
         }
-        
+
         
         return currentMove
         
@@ -80,7 +83,28 @@ class Bot {
             case 'P': return 'S'
             case 'R': return 'P'
             case 'S': return 'R'
+            case 'D': return 'W'
+            case 'W': return 'P'
         }
+    }
+
+    private defend(gamestate: Gamestate, move: BotSelection): BotSelection {
+        if (move=='P') {
+            return this.randomFromSelectionOfMoves(gamestate, ['P', 'R'])
+        } else if (move=='R') {
+            return this.randomFromSelectionOfMoves(gamestate, ['S', 'R'])
+        } else if (move=='S') {
+            return this.randomFromSelectionOfMoves(gamestate, ['P', 'S'])
+        } else if (move=='D') {
+            return 'W'
+        } else {
+            return this.randomiseMove(gamestate, 3)
+        }
+    }
+
+    private randomFromSelectionOfMoves(gamestate: Gamestate, selection: Array<BotSelection>): BotSelection {
+        const randomNum = Math.floor(Math.random()*selection.length)
+        return selection[randomNum]
     }
 
 }
