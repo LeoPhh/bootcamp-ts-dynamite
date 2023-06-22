@@ -7,15 +7,16 @@ class Bot {
         let currentMove: BotSelection
         const totalGamesPlayed = gamestate.rounds.length
 
+        // Initially play any first move, then randomise afterwards (unless overwritten)
         if (this.numberOfGamesPlayed(gamestate, 0)) {
-            currentMove = this.firstMove(gamestate)
+            currentMove = 'P'
         } else {
             currentMove = this.randomiseMove(gamestate, 4)
         }
 
-
+        // Override current move if certain conditions are met
         if (totalGamesPlayed>0) {
-            console.log(this.mostRecentRound(gamestate))
+            console.log(this.mostRecentRound(gamestate)) // Not required (just for testing purposes)
             
             if (this.dynamitesUsed(gamestate)==100) {
                 currentMove = this.randomiseMove(gamestate, 3)
@@ -24,16 +25,15 @@ class Bot {
 
 
         if (totalGamesPlayed>50) {
-            console.log(this.detectPreviousMoves(gamestate, 4))
+            if (this.detectRepeatingMoves(gamestate, 4)) {
+                const mostRecentMove = this.mostRecentRound(gamestate).p2
+                currentMove = this.counterAttack(gamestate, mostRecentMove)
+            }
         }
         
         
         return currentMove
         
-    }
-
-    private firstMove(gamestate: Gamestate): BotSelection {
-        return 'P'
     }
 
     private randomiseMove(gamestate: Gamestate, num): BotSelection {
@@ -67,6 +67,20 @@ class Bot {
             previousXMoves.push(gamestate.rounds[i].p2)
         }
         return previousXMoves
+    }
+
+    private detectRepeatingMoves(gamestate: Gamestate, moves) {
+        let previousXMoves = this.detectPreviousMoves(gamestate, moves)
+        const allEqual = arr => arr.every(x => x===arr[0])
+        return allEqual(previousXMoves)
+    }
+
+    private counterAttack(gamestate: Gamestate, move: BotSelection): BotSelection {
+        switch (move) {
+            case 'P': return 'S'
+            case 'R': return 'P'
+            case 'S': return 'R'
+        }
     }
 
 }
