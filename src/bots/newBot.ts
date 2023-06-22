@@ -10,6 +10,12 @@ class Bot {
         // Initially play any first move, then randomise afterwards (unless overwritten)
         if (this.numberOfGamesPlayed(gamestate, 0)) {
             currentMove = 'P'
+        } else if (totalGamesPlayed<300) {
+            currentMove = this.randomiseMove(gamestate, 3)
+        } else if (totalGamesPlayed<350) {
+            currentMove = this.randomiseMove(gamestate, 4)
+        } else if (totalGamesPlayed<500) {
+            currentMove = this.randomiseMove(gamestate, 3)
         } else {
             currentMove = this.randomiseMove(gamestate, 4)
         }
